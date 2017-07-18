@@ -26,10 +26,13 @@ module ModelExtensions::Batch
     end
   end
 
+  private
+
+  # callbacks
+
   def manage_downstream_requests
     pipeline.manage_downstream_requests(self)
   end
-  private :manage_downstream_requests
 
   def generate_target_assets_for_requests
     requests_to_update, asset_links = [], []
@@ -59,7 +62,6 @@ module ModelExtensions::Batch
       Request.find(request_details.first).update_attributes!(asset_id: request_details.last)
     end
   end
-  private :generate_target_assets_for_requests
 
   def downstream_requests_needing_asset(request)
     next_requests_needing_asset = request.next_requests(pipeline).select { |r| r.asset_id.blank? }
@@ -69,5 +71,5 @@ module ModelExtensions::Batch
   def need_target_assets_on_requests?
     pipeline.asset_type.present? and pipeline.request_types.detect(&:needs_target_asset?).present?
   end
-  private :need_target_assets_on_requests?
+
 end
